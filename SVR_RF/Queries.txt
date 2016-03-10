@@ -1,0 +1,33 @@
+
+----------------------------------------------------------------------------------------------------
+select type_,count(*) from public.vgiforpostgis  ---count number of each species 
+group by type_
+order by count(*) desc
+--------------------------------------------------------------------------------------------------------
+select * from public.vgiforpostgis
+where type_='Speenkruid' and phenophase='Eerste bloei'----select phenophase
+----------------------------------------------------------------------------------------------------------
+SELECT x,y, year_,doy 
+  FROM public.speenkruid_final
+GROUP BY x,y, year_,doy 
+  HAVING count(*) > 1---------------to check duplicate x, y, doy, year
+---------------------------------------------------------------------------------------------------------------
+select s.gid, s.x,s.y, s.year_, p.__gid, p.x,p.y, p.year_,p.pr1_2008,s.prec_feb
+from public.speenkruid_final s
+inner join  public.precipitation p---------select regressor values in main table
+on s.gid=p.__gid
+where s.year_=2008 and p.year_=2008
+-------------------------------------------------------------------------------------------------------
+
+update public.speenkruid_final
+  set prec_mar = x.result              -------------update regressor values in main table
+from (
+    select __gid,year_,pr2_2007 as result from public.precipitation where year_=2007
+) x
+where x.__gid = public.speenkruid_final.gid and public.speenkruid_final.year_=2007 and x.year_=2007;
+
+-----------------------------------------------------------------------------------------------------------------
+
+
+
+
